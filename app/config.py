@@ -1,0 +1,6 @@
+DEBUG = True
+TESTING = True
+CSRF_ENABLED = True
+SECRET_KEY = 'random-key'
+SQLALCHEMY_DATABASE_URI = 'postgresql:///worldcup'
+SQLALCHEMY_TRACK_MODIFICATIONS = True

@@ -1,25 +1,41 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import os
+from flask_marshmallow import Marshmallow
+from flask_migrate import Migrate
+
 import getpass
 
-def create_db():
-    db_name = 'sqlite:///worldcup.db'.split('/')[-1]
-    if not db_name in os.listdir(os.getcwd()):
-        db.create_all()
-
 app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///worldcup.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'random_string'
+app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
+migrate = Migrate(app, db)
 
-from .models import Team, Player
-create_db()
+from .models import Team, Player, User
+with app.app_context():
+    db.create_all()
 
 @app.cli.command('create-superuser')
 def create_superuser():
-    name = input('Select a name: ')
+    username = None
+    while not username:
+        username = input('Select a name: ')
+        if User.query.filter_by(username = username).first():
+            print('Username already exists, please select another username!')
+            username = None
     password = getpass.getpass(prompt="Select a password: ")
+    if username and password:
+        adm = User(username=username, password=password, admin=True)
+        db.session.add(adm)
+        db.session.commit()
+
+@app.cli.command('reset-superuser')
+def create_superuser():
+    for user in User.query.filter_by(admin=True):
+        if user:
+            db.session.delete(user)
+    db.session.commit()
+
+    
+
