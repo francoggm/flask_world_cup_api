@@ -30,7 +30,7 @@ class User(db.Model):
 class Team(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False)
-    created = db.Column(db.Date())
+    created = db.Column(db.Date(), nullable=False)
     coach = db.relationship('Coach', backref='coach', uselist=False)
     players = db.relationship('Player', backref='player')
 
@@ -52,8 +52,8 @@ class Player(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False)
     birthdate = db.Column(db.Date())
-    weight = db.Column(db.Numeric(precision=5, scale=2))
-    height = db.Column(db.Integer())
+    weight = db.Column(db.Numeric(precision=5, scale=2), nullable=False)
+    height = db.Column(db.Integer(), nullable=False)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
 
     @property
