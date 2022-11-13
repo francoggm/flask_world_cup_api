@@ -5,10 +5,9 @@ from sqlalchemy.sql import func
 from . import db, ma
 
 # Models
-
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    public_id = db.Column(db.String(12), unique=True)
+    public_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(250), nullable=False)
     admin = db.Column(db.Boolean(), default=False)
@@ -94,7 +93,6 @@ class Coach(db.Model):
         return f'{self.name}'
 
 # Schemas
-
 class UserSchema(ma.Schema):
     class Meta:
         fields = ('public_id','username', 'admin', 'created_date')
