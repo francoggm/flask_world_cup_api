@@ -2,7 +2,8 @@ from flask import jsonify, make_response, request
 from uuid import uuid4
 
 from . import app, db
-from .models import User, user_schema
+from .models import User
+from .schemas import user_schema
 
 @app.route('/register', methods=['POST'])
 def register():

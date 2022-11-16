@@ -2,9 +2,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import date
 from sqlalchemy.sql import func
 
-from . import db, ma
+from . import db
 
-# Models
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     public_id = db.Column(db.String(50), unique=True)
@@ -92,33 +91,5 @@ class Coach(db.Model):
     def __repr__(self) -> str:
         return f'{self.name}'
 
-# Schemas
-class UserSchema(ma.Schema):
-    class Meta:
-        fields = ('public_id','username', 'admin', 'created_date')
-
-class TeamSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'name', 'created_date', 'coach', 'players')
-
-class PlayerSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'name', 'age', 'weight', 'height', 'team_id')
-
-class CoachSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'name', 'age', 'team_id')
-
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
-
-team_schema = TeamSchema()
-teams_schema = TeamSchema(many=True)
-
-player_schema = PlayerSchema()
-players_schema = PlayerSchema(many=True)
-
-coach_schema = CoachSchema()
-coachs_schema = CoachSchema(many=True)
 
 
