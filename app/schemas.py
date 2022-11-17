@@ -19,13 +19,13 @@ class BodyTeam(BaseModel):
 
 class BodyPlayer(BaseModel):
     name: str
-    age: str
+    birthdate: str
     weight: float
     height: int
 
 class BodyCoach(BaseModel):
-    name: str
-    age: str
+    name: str 
+    birthdate: str
 
 class UpdateUser(BaseModel):
     pass
@@ -36,13 +36,13 @@ class UpdateTeam(BaseModel):
 
 class UpdatePlayer(BaseModel):
     name: Optional[str]
-    age: Optional[str]
+    birthdate: Optional[str]
     weight: Optional[float]
     height: Optional[int]
 
 class UpdateCoach(BaseModel):
     name: Optional[str]
-    age: Optional[str]
+    birthdate: Optional[str]
 
 # Models Schemas
 class UserSchema(ma.SQLAlchemyAutoSchema):
@@ -78,4 +78,3 @@ players_schema = PlayerSchema(many=True)
 
 coach_schema = CoachSchema()
 coachs_schema = CoachSchema(many=True)
-

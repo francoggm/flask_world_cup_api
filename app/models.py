@@ -62,11 +62,6 @@ class Player(db.Model):
             return today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
         return None
     
-    @age.setter
-    def age(self, string_date):
-        date_list = string_date.split('/')
-        self.birthdate = date(int(date_list[0]), int(date_list[1]), int(date_list[2])) 
-    
     def __repr__(self) -> str:
         return f'{self.name}'
 
@@ -82,11 +77,6 @@ class Coach(db.Model):
             today = date.today()
             return today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
         return None
-    
-    @age.setter
-    def age(self, string_date):
-        date_list = string_date.split('/')
-        self.birthdate = date(int(date_list[0]), int(date_list[1]), int(date_list[2])) 
     
     def __repr__(self) -> str:
         return f'{self.name}'

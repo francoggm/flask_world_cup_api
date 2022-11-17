@@ -129,7 +129,7 @@ def get_player(id):
 @validate()
 def create_player(body: BodyPlayer):
     body = body.dict()
-    player = Player(name = body['name'], age = body['age'], weight = body['weight'], height = body['height'])
+    player = Player(name = body['name'], birthdate = body['birthdate'], weight = body['weight'], height = body['height'])
     db.session.add(player)
     db.session.commit()
     return make_response(player_schema.dump(player), 200)
@@ -142,8 +142,8 @@ def update_player(id, body: UpdatePlayer):
         body = body.dict()
         if body.get('name'):
             player.name = body['name']
-        if body.get('age'):
-            player.age = body['age']
+        if body.get('birthdate'):
+            player.birthdate = body['birthdate']
         if body.get('weight'):
             player.weight = body['weight']
         if body.get('height'):
@@ -180,7 +180,7 @@ def get_coach(id):
 @validate()
 def create_coach(body: BodyCoach):
     body = body.dict()
-    coach = Coach(name = body['name'], age = body['age'])
+    coach = Coach(name = body['name'], birthdate = body['birthdate'])
     db.session.add(coach)
     db.session.commit()
     return make_response(coach_schema.dump(coach), 200)
@@ -193,8 +193,8 @@ def update_coach(id, body: UpdateCoach):
         body = body.dict()
         if body.get('name'):
             coach.name = body['name']
-        if body.get('age'):
-            coach.age = body['age']
+        if body.get('birthdate'):
+            coach.birthdate = body['birthdate']
         db.session.commit()
         return make_response(coach_schema.dump(coach), 200)
     abort(404, description='Coach not found!')
