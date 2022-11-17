@@ -1,20 +1,26 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 
+import os
 import getpass
 from uuid import uuid4
 
 app = Flask(__name__)
-app.config.from_pyfile('config.py')
+app.config.from_mapping(
+    TESTING = True,
+    CSRF_ENABLED = True,
+    SECRET_KEY = os.environ.get('SECRET_KEY'),
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI'),
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+)
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
 from .models import User, Team, Player
-
 with app.app_context():
     db.create_all()
 
@@ -22,13 +28,20 @@ from .auth import *
 from .users import *
 from .routes import *
 
+@app.errorhandler(400)
+def generic_error(error):
+    return jsonify({"error": error.description}), 400
+
+@app.errorhandler(404)
+def item_not_found(error):
+    return jsonify({"error": error.description}), 404
+
 @app.cli.command('create-superuser')
 def create_superuser():
-    username = None
+    username = ''
     while not username:
         username = input('Select a name: ')
         if username == '':
-            username = None
             print('Please enter a valid username')
             continue
         if User.query.filter_by(username = username).first():

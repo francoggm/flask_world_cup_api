@@ -1,30 +1,35 @@
-from flask import jsonify, make_response, request
+from flask import jsonify, make_response, abort
 from uuid import uuid4
+from flask_pydantic import validate
 
 from . import app, db
 from .models import User
-from .schemas import user_schema
+from .schemas import user_schema, ResponseAuth
 
 @app.route('/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    if data.get('username') and data.get('password'):
-        if not User.query.filter_by(username = data['username']).first():
-            user = User(username=data['username'], password=data['password'], public_id=uuid4())
+@validate()
+def register(body: ResponseAuth):
+    username = body.dict().get('username', '')
+    password = body.dict().get('password', '')
+    if len(password) > 4 and len(username) > 1:
+        if not User.query.filter_by(username = username).first():
+            user = User(username=username, password=password, public_id=uuid4())
             db.session.add(user)
             db.session.commit()
             return make_response(user_schema.dump(user), 200)
-        return make_response(jsonify({"message": "User already exists!"}), 400)
-    return make_response(jsonify({"message": "Wrong credentials!"}), 400)
+        abort(400, description="User already exists")
+    abort(400, description="Wrong informations, verify if the username and password (min 5 characters) is valid!")
 
 @app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    if data.get('username') and data.get('password'):
-        user = User.query.filter_by(username = data['username']).first()
+@validate()
+def login(body: ResponseAuth):
+    username = body.dict().get('username', '')
+    password = body.dict().get('password', '')
+    if username and password:
+        user = User.query.filter_by(username = username).first()
         if user:
-            if user.check_password(data['password']):
+            if user.check_password(password):
                 return make_response(user_schema.dump(user), 200)
-            return make_response(jsonify({"message": "Wrong password!"}), 401)
-        return make_response(jsonify({"message": "User not found!"}), 401)
-    return make_response(jsonify({"message": "Wrong credentials!"}), 401)
+            abort(400, description="Wrong password!")
+        abort(400, description="User not found!")
+    abort(400, description="Wrong credentials!")

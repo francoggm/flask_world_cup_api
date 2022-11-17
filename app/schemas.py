@@ -1,20 +1,71 @@
+from pydantic import BaseModel
+from typing import Optional
+from marshmallow import fields
+
 from . import ma
+from .models import User, Team, Player, Coach
 
-class UserSchema(ma.Schema):
-    class Meta:
-        fields = ('public_id','username', 'admin', 'created_date')
+# Response Schemas
+class BodyAuth(BaseModel):
+    username: str
+    password: str
 
-class PlayerSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'name', 'age', 'weight', 'height', 'team_id')
+class BodyUser(BaseModel):
+    pass
 
-class CoachSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'name', 'age', 'team_id')
+class BodyTeam(BaseModel):
+    name: str
+    created_date: str
 
-class TeamSchema(ma.Schema):
+class BodyPlayer(BaseModel):
+    name: str
+    age: str
+    weight: float
+    height: int
+
+class BodyCoach(BaseModel):
+    name: str
+    age: str
+
+class UpdateUser(BaseModel):
+    pass
+
+class UpdateTeam(BaseModel):
+    name: Optional[str]
+    created_date: Optional[str]
+
+class UpdatePlayer(BaseModel):
+    name: Optional[str]
+    age: Optional[str]
+    weight: Optional[float]
+    height: Optional[int]
+
+class UpdateCoach(BaseModel):
+    name: Optional[str]
+    age: Optional[str]
+
+# Models Schemas
+class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        fields = ('id', 'name', 'created_date', 'coach', 'players')
+        model = User
+        exclude = ("password_hash", "id")
+
+class PlayerSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Player
+        fields = ('name', 'age', 'weight', 'height', 'team_id', 'id')
+
+class CoachSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Coach
+        fields = ('name', 'age', 'team_id', 'id')
+
+class TeamSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Team
+
+    players = ma.Nested(PlayerSchema, many=True)
+    coach = ma.Nested(CoachSchema)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -28,16 +79,3 @@ players_schema = PlayerSchema(many=True)
 coach_schema = CoachSchema()
 coachs_schema = CoachSchema(many=True)
 
-def serialize_team_relationship(team_schema):
-    if isinstance(team_schema, list):
-        for team in team_schema:
-            if team.get('players'):
-                team['players'] = players_schema.dump(team['players'])
-            if team.get('coach'):
-                team['coach'] = coach_schema.dump(team['coach'])
-    else:
-        if team_schema.get('players'):
-            team_schema['players'] = players_schema.dump(team_schema['players'])
-        if team_schema.get('coach'):
-            team_schema['coach'] = coach_schema.dump(team_schema['coach'])
-    return team_schema
