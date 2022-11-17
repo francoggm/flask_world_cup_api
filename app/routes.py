@@ -1,4 +1,4 @@
-from flask import make_response, jsonify, request, abort
+from flask import make_response, jsonify, abort
 from flask_pydantic import validate
 
 from . import app, db

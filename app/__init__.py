@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 
 import os
 import getpass
@@ -13,12 +14,14 @@ app.config.from_mapping(
     CSRF_ENABLED = True,
     SECRET_KEY = os.environ.get('SECRET_KEY'),
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI'),
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = True,
+    JWT_SECRET_KEY=os.environ.get('JWT_SECRET_KEY')
 )
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
+JWTManager(app)
 
 from .models import User, Team, Player
 with app.app_context():
