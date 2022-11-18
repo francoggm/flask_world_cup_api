@@ -33,17 +33,6 @@ class Team(db.Model):
     coach = db.relationship('Coach', backref='coach', uselist=False)
     players = db.relationship('Player', backref='player')
 
-    @property
-    def created_date(self):
-        if self.created:
-            return self.created.strftime('%Y/%m/%d')
-        return None
-    
-    @created_date.setter
-    def created_date(self, string_date):
-        date_list = string_date.split('/')
-        self.created = date(int(date_list[0]), int(date_list[1]), int(date_list[2])) 
-
     def __repr__(self) -> str:
         return f'Team {self.name}'
 

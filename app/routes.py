@@ -4,7 +4,7 @@ from flask_pydantic import validate
 from . import app, db
 from .models import User, Team, Player, Coach
 from .schemas import team_schema, teams_schema, player_schema, players_schema, coach_schema, coachs_schema
-from .schemas import BodyTeam, BodyPlayer, BodyCoach, UpdatePlayer, UpdateCoach, UpdateTeam
+from .schemas import PostTeam, PostPlayer, PostCoach, UpdatePlayer, UpdateCoach, UpdateTeam
 
 #Teams
 @app.get('/team')
@@ -23,9 +23,9 @@ def get_team(id):
 
 @app.post('/team')
 @validate()
-def create_team(body: BodyTeam):
+def create_team(body: PostTeam):
     body = body.dict()
-    team = Team(name = body['name'], created_date = body['created_date'])
+    team = Team(name = body['name'], created = body['created'])
     db.session.add(team)
     db.session.commit()
     return make_response(team_schema.dump(team), 201)
@@ -38,8 +38,8 @@ def update_team(id, body: UpdateTeam):
         body = body.dict()
         if body.get('name'):
             team.name = body['name']
-        if body.get('created_date'):
-            team.created_date = body['created_date']
+        if body.get('created'):
+            team.created = body['created']
         db.session.commit()
         return make_response(team_schema.dump(team), 200)
     abort(404, description='Team not found!')
@@ -127,7 +127,7 @@ def get_player(id):
 
 @app.post('/player')
 @validate()
-def create_player(body: BodyPlayer):
+def create_player(body: PostPlayer):
     body = body.dict()
     player = Player(name = body['name'], birthdate = body['birthdate'], weight = body['weight'], height = body['height'])
     db.session.add(player)
@@ -178,7 +178,7 @@ def get_coach(id):
 
 @app.post('/coach')
 @validate()
-def create_coach(body: BodyCoach):
+def create_coach(body: PostCoach):
     body = body.dict()
     coach = Coach(name = body['name'], birthdate = body['birthdate'])
     db.session.add(coach)

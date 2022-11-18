@@ -1,29 +1,28 @@
 from pydantic import BaseModel
 from typing import Optional
-from marshmallow import fields
 
 from . import ma
 from .models import User, Team, Player, Coach
 
 # Response Schemas
-class BodyAuth(BaseModel):
+class PostAuth(BaseModel):
     username: str
     password: str
 
-class BodyUser(BaseModel):
+class PostUser(BaseModel):
     pass
 
-class BodyTeam(BaseModel):
+class PostTeam(BaseModel):
     name: str
-    created_date: str
+    created: str
 
-class BodyPlayer(BaseModel):
+class PostPlayer(BaseModel):
     name: str
     birthdate: str
     weight: float
     height: int
 
-class BodyCoach(BaseModel):
+class PostCoach(BaseModel):
     name: str 
     birthdate: str
 

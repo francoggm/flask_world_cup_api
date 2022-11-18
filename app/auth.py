@@ -4,11 +4,11 @@ from flask_pydantic import validate
 
 from . import app, db
 from .models import User
-from .schemas import user_schema, BodyAuth
+from .schemas import user_schema, PostAuth
 
 @app.route('/register', methods=['POST'])
 @validate()
-def register(body: BodyAuth):
+def register(body: PostAuth):
     username = body.dict().get('username', '')
     password = body.dict().get('password', '')
     if len(password) > 4 and len(username) > 1:
@@ -22,7 +22,7 @@ def register(body: BodyAuth):
 
 @app.route('/login', methods=['POST'])
 @validate()
-def login(body: BodyAuth):
+def login(body: PostAuth):
     username = body.dict().get('username', '')
     password = body.dict().get('password', '')
     if username and password:
