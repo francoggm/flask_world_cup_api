@@ -3,17 +3,20 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+from dotenv import load_dotenv
 
 import os
 import getpass
 from uuid import uuid4
 
+load_dotenv()
 app = Flask(__name__)
 app.config.from_mapping(
     TESTING = True,
     CSRF_ENABLED = True,
     SECRET_KEY = os.environ.get('SECRET_KEY'),
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI'),
+    SQLALCHEMY_DATABASE_URI = \
+    f"postgresql://{os.environ.get('DATABASE_USER')}:{os.environ.get('DATABASE_PASSWORD')}@{os.environ.get('DATABASE_CON')}/{os.environ.get('DATABASE')}",
     SQLALCHEMY_TRACK_MODIFICATIONS = True,
     JWT_SECRET_KEY=os.environ.get('JWT_SECRET_KEY')
 )
@@ -27,9 +30,13 @@ from .models import User, Team, Player
 with app.app_context():
     db.create_all()
 
-from .auth import *
+from .auth import auth
+app.register_blueprint(auth)
+
+from .routes import routes
+app.register_blueprint(routes)
+
 from .users import *
-from .routes import *
 
 @app.errorhandler(400)
 def generic_error(error):

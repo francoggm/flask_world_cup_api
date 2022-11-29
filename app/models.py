@@ -11,6 +11,10 @@ class User(db.Model):
     password_hash = db.Column(db.String(250), nullable=False)
     admin = db.Column(db.Boolean(), default=False)
     created_date = db.Column(db.DateTime(), default=func.now())
+    
+    players = db.relationship('Player', backref='players')
+    coachs = db.relationship('Coach', backref='coachs')
+    teams = db.relationship('Team', backref='teams')
 
     @property
     def password(self):
@@ -32,6 +36,7 @@ class Team(db.Model):
     created = db.Column(db.Date(), nullable=False)
     coach = db.relationship('Coach', backref='coach', uselist=False)
     players = db.relationship('Player', backref='player')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self) -> str:
         return f'Team {self.name}'
@@ -43,6 +48,7 @@ class Player(db.Model):
     weight = db.Column(db.Numeric(precision=5, scale=2), nullable=False)
     height = db.Column(db.Integer(), nullable=False)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     @property
     def age(self):
@@ -59,6 +65,7 @@ class Coach(db.Model):
     name = db.Column(db.String(length=30), nullable=False)
     birthdate = db.Column(db.Date())
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     @property
     def age(self):
