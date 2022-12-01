@@ -4,26 +4,13 @@ from sqlalchemy.sql import func
 
 from . import db
 
-user_player = db.Table('user_player',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('player_id', db.Integer, db.ForeignKey('player.id'), primary_key=True)
-)
+class UserCollection(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    player_id = db.Column(db.Integer)
 
-user_coach = db.Table('user_coach',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('coach_id', db.Integer, db.ForeignKey('coach.id'), primary_key=True)
-)
-
-player_team = db.Table('player_team',
-    db.Column('player_id', db.Integer, db.ForeignKey('player.id'), primary_key=True),
-    db.Column('team_id', db.Integer, db.ForeignKey('team.id'), primary_key=True)
-)
-
-coach_team = db.Table('coach_team',
-    db.Column('coach_id', db.Integer, db.ForeignKey('coach.id'), primary_key=True),
-    db.Column('team_id', db.Integer, db.ForeignKey('team.id'), primary_key=True)
-)
-
+    #Relationships
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -33,8 +20,8 @@ class User(db.Model):
     admin = db.Column(db.Boolean(), default=False)
     created_date = db.Column(db.DateTime(), default=func.now())
     
-    players = db.relationship('Player', secondary = 'user_player', overlaps='players')
-    coachs = db.relationship('Coach', secondary = 'user_coach', overlaps='coachs')
+    #Relationships
+    collections = db.relationship('UserCollection', backref = 'user')
     teams = db.relationship('Team', backref = 'user')
 
     @property
@@ -57,9 +44,7 @@ class Player(db.Model):
     birthdate = db.Column(db.Date())
     weight = db.Column(db.Numeric(precision=5, scale=2), nullable=False)
     height = db.Column(db.Integer(), nullable=False)
-    
-    users = db.relationship(User, secondary = 'user_player', overlaps='players')
-    teams = db.relationship('Team', secondary = 'player_team', overlaps='players')
+    role = db.Column(db.String(length=15), nullable=False)
 
     @property
     def age(self):
@@ -69,38 +54,21 @@ class Player(db.Model):
         return None
     
     def __repr__(self) -> str:
-        return f'{self.name}'
-
-class Coach(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(length=30), nullable=False)
-    birthdate = db.Column(db.Date())
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
-
-    users = db.relationship(User, secondary = 'user_coach', overlaps='coachs')
-    teams = db.relationship('Team', secondary = 'coach_team', overlaps='coachs')
-
-    @property
-    def age(self):
-        if self.birthdate:
-            today = date.today()
-            return today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
-        return None
-    
-    def __repr__(self) -> str:
-        return f'{self.name}'
+        return f'{self.role}: {self.name}'
 
 class Team(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False)
-    created = db.Column(db.Date(), nullable=False)
+    created_date = db.Column(db.DateTime(), default=func.now())
 
+    #Relationships
+    players = db.relationship('UserCollection', backref = 'team')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    players = db.relationship(Player, secondary = 'player_team', overlaps='players')
-    coachs = db.relationship(Coach, secondary = 'coach_team', overlaps='coachs')
 
     def __repr__(self) -> str:
         return f'Team {self.name}'
+
+
 
 
 
