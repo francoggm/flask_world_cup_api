@@ -36,6 +36,9 @@ app.register_blueprint(auth)
 from .routes import routes
 app.register_blueprint(routes)
 
+from .cards import cards
+app.register_blueprint(cards)
+
 from .users import *
 
 @app.errorhandler(400)
