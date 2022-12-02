@@ -1,11 +1,7 @@
 from . import ma
-from .models import User, Team, Player, UserCollection
+from .models import User, Team, Player
 
 # Models Schemas
-class UserCollectionSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = UserCollection
-        fields = ('player_id', 'team_id')
 
 class PlayerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -16,18 +12,28 @@ class TeamSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Team
         exclude = ('created_date',)
+    
+    players_owned = ma.Nested(PlayerSchema, many = True)
 
-    players = ma.Nested(UserCollectionSchema, many=True)
-
-class UserSchema(ma.SQLAlchemyAutoSchema):
+class LoginSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
         fields = ('username', 'public_id')
     
-    teams = ma.Nested(TeamSchema, many=True)
+    teams = ma.Nested(TeamSchema, many = True)
+    players_owned = ma.Nested(PlayerSchema, many = True)
+
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        exclude = ('id', 'created_date', 'password_hash')
+    
+    teams = ma.Nested(TeamSchema, many = True)
+    players_owned = ma.Nested(PlayerSchema, many = True)
+
+login_schema = LoginSchema()
 
 user_schema = UserSchema()
-users_schema = UserSchema(many=True)
 
 team_schema = TeamSchema()
 teams_schema = TeamSchema(many=True)

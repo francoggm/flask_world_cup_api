@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 
 from . import db
 from .models import User
-from .schemas import user_schema
+from .schemas import login_schema, user_schema
 from .schemas_pydantic import PostAuth
 
 auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
@@ -29,7 +29,7 @@ def register(body: PostAuth):
             user = User(username=username, password=password, public_id=uuid4())
             db.session.add(user)
             db.session.commit()
-            return make_response(user_schema.dump(user), 201)
+            return make_response(login_schema.dump(user), 201)
 
         abort(400, description="User already exists")
     abort(400, description="Wrong informations, verify if the username and password (min 5 characters) is valid!")
@@ -45,7 +45,7 @@ def login(body: PostAuth):
         if user:
             if user.check_password(password):
                 access_token, refresh_token = get_tokens(user, refresh = True)
-                user_response = user_schema.dump(user)
+                user_response = login_schema.dump(user)
                 user_response.update({
                     'access_token': access_token, 
                     'refresh_token': refresh_token
@@ -57,7 +57,7 @@ def login(body: PostAuth):
     abort(400, description="Wrong credentials!")
 
 @auth.route('/me')
-@jwt_required
+@jwt_required()
 def get_self_user():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()

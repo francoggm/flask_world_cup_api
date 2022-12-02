@@ -3,7 +3,7 @@ from flask_pydantic import validate
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from . import db
-from .models import User, Team, Player, UserCollection
+from .models import User, Team, Player
 from .schemas import team_schema, teams_schema, players_schema
 from .schemas_pydantic import PostTeam
 
@@ -73,47 +73,65 @@ def delete_team(id):
 
     abort(404, description='Team not found!')
 
-@routes.put('/team/<int:t_id>/player/<int:p_id>')
-@jwt_required()
-def add_team_player(t_id, p_id):
-    user_id = get_jwt_identity()
-    team = Team.query.filter_by(id = t_id, user_id = user_id).first()
-
-    if team:
-        collection = UserCollection.query.filter_by(user_id = user_id, player_id = p_id, team_id = None).first()
-        if collection:
-            for player in team.players:
-                if p_id == player.player_id:
-                    abort(400, description='Player already in this team!')
-            team.players.append(collection)
-            db.session.commit()
-            return make_response(team_schema.dump(team), 200)
-
-        abort(404, description='Player not found!')
-    abort(404, description='Team not found!')
-    
-
-@routes.delete('/team/<int:t_id>/player/<int:p_id>')
-def delete_team_player(t_id, p_id):
-    team = Team.query.filter_by(id = t_id).first()
-
-    if team:
-        player = Player.query.filter_by(id = p_id).first()
-        if player:
-            if player in team.players:
-                team.players.remove(player)
-                db.session.commit()
-                return make_response(team_schema.dump(team), 200)
-
-            abort(400, description="Player is not in this team!")
-        abort(404, description='Player not found!')
-    abort(404, description='Team not found!')
-
-@routes.get('/cards')
+@routes.get('/player')
 @jwt_required()
 def get_players():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
-    players = Player.query.filter(Player.id.in_([collection.player_id for collection in user.collections]))
-    return players_schema.dump(players), 200
+
+    return make_response(players_schema.dump(user.players_owned), 200)
+
+@routes.delete('/player/<int:id>')
+@jwt_required()
+def delete_players(id):
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id = user_id).first()
+    player = Player.query.filter_by(id = id).first()
+    if player:
+        print(player, user.players_owned)
+        if player in user.players_owned:
+            user.players_owned.remove(player)
+            db.session.commit()
+            return make_response(jsonify({"msg": "Player deleted from your cards!"}), 200)
+
+        abort(404, description='Player not found in yours cards!')
+    abort(404, description='Player not found!')
+
+# @routes.put('/team/<int:t_id>/player/<int:p_id>')
+# @jwt_required()
+# def add_team_player(t_id, p_id):
+#     user_id = get_jwt_identity()
+#     team = Team.query.filter_by(id = t_id, user_id = user_id).first()
+
+#     if team:
+#         collection = UserCollection.query.filter_by(user_id = user_id, player_id = p_id, team_id = None).first()
+#         if collection:
+#             for player in team.players:
+#                 if p_id == player.player_id:
+#                     abort(400, description='Player already in this team!')
+#             team.players.append(collection)
+#             db.session.commit()
+#             return make_response(team_schema.dump(team), 200)
+
+#         abort(404, description='Player not found!')
+#     abort(404, description='Team not found!')
+    
+
+# @routes.delete('/team/<int:t_id>/player/<int:p_id>')
+# def delete_team_player(t_id, p_id):
+#     team = Team.query.filter_by(id = t_id).first()
+
+#     if team:
+#         player = Player.query.filter_by(id = p_id).first()
+#         if player:
+#             if player in team.players:
+#                 team.players.remove(player)
+#                 db.session.commit()
+#                 return make_response(team_schema.dump(team), 200)
+
+#             abort(400, description="Player is not in this team!")
+#         abort(404, description='Player not found!')
+#     abort(404, description='Team not found!')
+
+
 

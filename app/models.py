@@ -4,13 +4,15 @@ from sqlalchemy.sql import func
 
 from . import db
 
-class UserCollection(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    player_id = db.Column(db.Integer)
+user_player = db.Table('user_player',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('player_id', db.Integer, db.ForeignKey('player.id')),
+)
 
-    #Relationships
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+player_team = db.Table('player_team',
+    db.Column('player_id', db.Integer, db.ForeignKey('player.id')),
+    db.Column('team_id', db.Integer, db.ForeignKey('team.id')),
+)
 
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -21,7 +23,7 @@ class User(db.Model):
     created_date = db.Column(db.DateTime(), default=func.now())
     
     #Relationships
-    collections = db.relationship('UserCollection', backref = 'user')
+    players_owned = db.relationship('Player', secondary = user_player, backref = 'owners')
     teams = db.relationship('Team', backref = 'user')
 
     @property
@@ -62,8 +64,8 @@ class Team(db.Model):
     created_date = db.Column(db.DateTime(), default=func.now())
 
     #Relationships
-    players = db.relationship('UserCollection', backref = 'team')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    players_owned = db.relationship('Player', secondary = player_team, backref = 'teams')
 
     def __repr__(self) -> str:
         return f'Team {self.name}'
