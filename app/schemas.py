@@ -11,7 +11,7 @@ class PlayerSchema(ma.SQLAlchemyAutoSchema):
 class TeamSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Team
-        exclude = ('created_date',)
+        exclude = ('created_date', 'id')
     
     players_owned = ma.Nested(PlayerSchema, many = True)
 
@@ -26,7 +26,7 @@ class LoginSchema(ma.SQLAlchemyAutoSchema):
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
-        exclude = ('id', 'created_date', 'password_hash')
+        exclude = ('id', 'created_date', 'password_hash', 'last_opening')
     
     teams = ma.Nested(TeamSchema, many = True)
     players_owned = ma.Nested(PlayerSchema, many = True)

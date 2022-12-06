@@ -5,23 +5,35 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from . import db
 from .models import User, Player
 from .responses import PostPlayer, UpdatePlayer
-from .schemas import players_schema, player_schema
+from .schemas import player_schema
 
 cards = Blueprint("cards", __name__, url_prefix = "/api/v1/card")
 
 #Players
 @cards.get('/player')
+@jwt_required()
 def get_players():
+    user_id = get_jwt_identity()
     players = Player.query.all()
-    if players:
-        return players_schema.dump(players), 200
-    abort(404, description = 'Players not found!')
+    players_schema = []
+    
+    for player in players:
+        schema = player_schema.dump(player)
+        schema.update({"own": next((True for user in player.owners if user.id == user_id), False)})
+        players_schema.append(schema)
+    return {"players": players_schema}, 200
 
 @cards.get('/player/<int:id>')
+@jwt_required()
 def get_player(id):
+    user_id = get_jwt_identity()
     player = Player.query.filter_by(id = id).first()
+
     if player:
-        return player_schema.dump(player), 200
+        schema = player_schema.dump(player)
+        schema.update({"own": next((True for user in player.owners if user.id == user_id), False)})
+        return {"player": schema}, 200
+
     abort(404, description = 'Player not found!')
 
 @cards.post('/player')
@@ -34,7 +46,7 @@ def create_player(body: PostPlayer):
         return {'error': "You don't have permission!"}, 403
 
     body = body.dict()
-    player = Player(name = body['name'], birthdate = body['birthdate'], weight = body['weight'], height = body['height'])
+    player = Player(name = body['name'], birthdate = body['birthdate'], weight = body['weight'], height = body['height'], role = body["role"])
     db.session.add(player)
     db.session.commit()
     return player_schema.dump(player), 201
@@ -59,6 +71,8 @@ def update_player(id, body: UpdatePlayer):
             player.weight = body['weight']
         if body.get('height'):
             player.height = body['height']
+        if body.get('role'):
+            player.role = body['role']
         db.session.commit()
         return player_schema.dump(player), 200
 

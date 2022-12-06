@@ -2,6 +2,7 @@ from flask import jsonify, abort, Blueprint
 from flask_pydantic import validate
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import timedelta, datetime
+from uuid import uuid4
 import random
 
 from . import db
@@ -19,7 +20,7 @@ def player_have_team(player, user_teams):
 
 def open_package(cards_count = 2):
     players = Player.query.all()
-    new_cards = [random.choice(players) for _ in cards_count]
+    new_cards = [random.choice(players) for _ in range(cards_count)]
     return new_cards
 
 #Teams
@@ -28,16 +29,15 @@ def open_package(cards_count = 2):
 def get_teams():
     user_id = get_jwt_identity()
     teams = Team.query.filter_by(user_id = user_id).all()
-    if teams:
-        return teams_schema.dump(teams), 200
+    
+    return {"teams": teams_schema.dump(teams)}, 200
 
-    abort(404, description='Teams not found!')
 
-@routes.get('/team/<int:id>')
+@routes.get('/team/<string:public_id>')
 @jwt_required()
-def get_team(id):
+def get_team(public_id):
     user_id = get_jwt_identity()
-    team = Team.query.filter_by(user_id = user_id, id = id).first()
+    team = Team.query.filter_by(user_id = user_id, public_id = public_id).first()
     if team:
         return team_schema.dump(team), 200
 
@@ -51,19 +51,19 @@ def create_team(body: PostTeam):
     user = User.query.filter_by(id = user_id).first()
 
     body = body.dict()
-    team = Team(name = body['name'])
+    team = Team(name = body['name'], public_id = uuid4())
     user.teams.append(team)
 
     db.session.add(team)
     db.session.commit()
     return team_schema.dump(team), 201
 
-@routes.put('/team/<int:id>')
+@routes.put('/team/<string:public_id>')
 @validate()
 @jwt_required()
-def update_team(id, body: PostTeam):
+def update_team(public_id, body: PostTeam):
     user_id = get_jwt_identity()
-    team = Team.query.filter_by(user_id = user_id, id = id).first()
+    team = Team.query.filter_by(user_id = user_id, public_id = public_id).first()
 
     if team:
         body = body.dict()
@@ -73,11 +73,11 @@ def update_team(id, body: PostTeam):
 
     abort(404, description='Team not found!')
 
-@routes.delete('/team/<int:id>')
+@routes.delete('/team/<string:public_id>')
 @jwt_required()
-def delete_team(id):
+def delete_team(public_id):
     user_id = get_jwt_identity()
-    team = Team.query.filter_by(id = id, user_id = user_id).first()
+    team = Team.query.filter_by(public_id = public_id, user_id = user_id).first()
 
     if team:
         db.session.delete(team)
@@ -92,7 +92,7 @@ def get_players():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
 
-    return players_schema.dump(user.players_owned), 200
+    return {"cards": players_schema.dump(user.players_owned)}, 200
 
 @routes.delete('/player/<int:id>')
 @jwt_required()
@@ -109,11 +109,11 @@ def delete_players(id):
         abort(404, description='Player not found in yours cards!')
     abort(404, description='Player not found!')
 
-@routes.put('/team/<int:t_id>/player/<int:p_id>')
+@routes.put('/team/<string:team_pid>/player/<int:p_id>')
 @jwt_required()
-def add_team_player(t_id, p_id):
+def add_team_player(team_pid, p_id):
     user_id = get_jwt_identity()
-    team = Team.query.filter_by(id = t_id, user_id = user_id).first()
+    team = Team.query.filter_by(public_id = team_pid, user_id = user_id).first()
     user = User.query.filter_by(id = user_id).first()
 
     if team:
@@ -130,11 +130,11 @@ def add_team_player(t_id, p_id):
         abort(404, description='Player not found!')
     abort(404, description='Team not found!')
 
-@routes.delete('/team/<int:t_id>/player/<int:p_id>')
+@routes.delete('/team/<string:team_pid>/player/<int:p_id>')
 @jwt_required()
-def delete_team_player(t_id, p_id):
+def delete_team_player(team_pid, p_id):
     user_id = get_jwt_identity()
-    team = Team.query.filter_by(id = t_id, user_id = user_id).first()
+    team = Team.query.filter_by(public_id = team_pid, user_id = user_id).first()
 
     if team:
         user = User.query.filter_by(id = user_id).first()
@@ -153,22 +153,21 @@ def delete_team_player(t_id, p_id):
 
 @routes.get('/package')
 @jwt_required()
-def open_package():
+def user_package():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
     
     if user.last_opening + timedelta(days = 1) < datetime.now():
         user.last_opening = datetime.now()
-        # players_schema = []
-        # new_cards = open_package()
-        # for card in new_cards:
-        #     schema = player_schema(card)
-        #     schema.update({"situation": "Already have!" if card in user.players_owned else "New card!"})
-        #     players_schema.append(schema)
-        # user.players_owned.extend(new_cards)
+        players_schema = []
+        new_cards = open_package()
+        for card in new_cards:
+            schema = player_schema.dump(card)
+            schema.update({"situation": "Already have!" if card in user.players_owned else "New card!"})
+            players_schema.append(schema)
+        user.players_owned.extend(new_cards)
         db.session.commit()
-        # return players_schema, 200
-        return {}
+        return {"cards": players_schema}, 200
 
     remains = (user.last_opening + timedelta(days = 1)) - datetime.now()
     remains = timedelta(seconds = remains.seconds)

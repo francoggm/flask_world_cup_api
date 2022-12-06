@@ -26,7 +26,7 @@ def register(body: PostAuth):
 
     if len(password) > 4 and len(username) > 1:
         if not User.query.filter_by(username = username).first():
-            user = User(username=username, password=password, public_id=uuid4())
+            user = User(username = username, password = password, public_id = uuid4())
             db.session.add(user)
             db.session.commit()
             return make_response(login_schema.dump(user), 201)

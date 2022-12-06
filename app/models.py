@@ -24,7 +24,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(250), nullable=False)
     admin = db.Column(db.Boolean(), default=False)
     created_date = db.Column(db.DateTime(), default = func.now())
-    last_opening = db.Column(db.DateTime(), default = func.now() - timedelta(days=1)) 
+    last_opening = db.Column(db.DateTime(), default = func.now() - timedelta(days = 1)) 
     
     #Relationships
     players_owned = db.relationship('Player', secondary = user_player, backref = 'owners')
@@ -64,6 +64,7 @@ class Player(db.Model):
 
 class Team(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
+    public_id = db.Column(db.String(50), unique=True, nullable=False)
     name = db.Column(db.String(length=30), nullable=False)
     created_date = db.Column(db.DateTime(), default=func.now())
 
