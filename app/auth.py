@@ -6,7 +6,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 from . import db
 from .models import User
 from .schemas import login_schema, user_schema
-from .schemas_pydantic import PostAuth
+from .responses import PostAuth
 
 auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 

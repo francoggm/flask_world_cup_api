@@ -1,9 +1,11 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import date
 from sqlalchemy.sql import func
+from datetime import timedelta
 
 from . import db
 
+#Many-to-many links
 user_player = db.Table('user_player',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('player_id', db.Integer, db.ForeignKey('player.id')),
@@ -14,13 +16,15 @@ player_team = db.Table('player_team',
     db.Column('team_id', db.Integer, db.ForeignKey('team.id')),
 )
 
+#Models
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     public_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(250), nullable=False)
     admin = db.Column(db.Boolean(), default=False)
-    created_date = db.Column(db.DateTime(), default=func.now())
+    created_date = db.Column(db.DateTime(), default = func.now())
+    last_opening = db.Column(db.DateTime(), default = func.now() - timedelta(days=1)) 
     
     #Relationships
     players_owned = db.relationship('Player', secondary = user_player, backref = 'owners')

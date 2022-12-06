@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from . import db
 from .models import User, Player
-from .schemas_pydantic import PostPlayer, UpdatePlayer
+from .responses import PostPlayer, UpdatePlayer
 from .schemas import players_schema, player_schema
 
 cards = Blueprint("cards", __name__, url_prefix = "/api/v1/card")
