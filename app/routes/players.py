@@ -2,10 +2,10 @@ from flask import jsonify, abort, Blueprint
 from flask_pydantic import validate
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from . import db
-from .models import User, Player
-from .responses import PostPlayer, UpdatePlayer
-from .schemas import player_schema
+from .. import db
+from ..models import User, Player
+from ..responses import PostPlayer, UpdatePlayer
+from ..schemas import player_schema
 
 cards = Blueprint("cards", __name__, url_prefix = "/api/v1/card")
 

@@ -3,25 +3,14 @@ from flask_pydantic import validate
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import timedelta, datetime
 from uuid import uuid4
-import random
 
-from . import db
-from .models import User, Team, Player
-from .schemas import team_schema, teams_schema, players_schema, player_schema
-from .responses import PostTeam
+from .. import db
+from ..models import User, Team, Player
+from ..schemas import team_schema, teams_schema, players_schema, player_schema
+from ..responses import PostTeam
+from ..utils import *
 
 routes = Blueprint("routes", __name__, url_prefix = "/api/v1/user")
-
-def player_have_team(player, user_teams):
-    for team in user_teams:
-        if player in team.players_owned:
-            return True
-    return False
-
-def open_package(cards_count = 2):
-    players = Player.query.all()
-    new_cards = [random.choice(players) for _ in range(cards_count)]
-    return new_cards
 
 #Teams
 @routes.get('/team')
@@ -29,7 +18,6 @@ def open_package(cards_count = 2):
 def get_teams():
     user_id = get_jwt_identity()
     teams = Team.query.filter_by(user_id = user_id).all()
-    
     return {"teams": teams_schema.dump(teams)}, 200
 
 
@@ -49,11 +37,9 @@ def get_team(public_id):
 def create_team(body: PostTeam):
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
-
     body = body.dict()
     team = Team(name = body['name'], public_id = uuid4())
     user.teams.append(team)
-
     db.session.add(team)
     db.session.commit()
     return team_schema.dump(team), 201
@@ -64,7 +50,6 @@ def create_team(body: PostTeam):
 def update_team(public_id, body: PostTeam):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(user_id = user_id, public_id = public_id).first()
-
     if team:
         body = body.dict()
         team.name = body['name']
@@ -78,7 +63,6 @@ def update_team(public_id, body: PostTeam):
 def delete_team(public_id):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(public_id = public_id, user_id = user_id).first()
-
     if team:
         db.session.delete(team)
         db.session.commit()
@@ -91,7 +75,6 @@ def delete_team(public_id):
 def get_players():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
-
     return {"cards": players_schema.dump(user.players_owned)}, 200
 
 @routes.delete('/player/<int:id>')
@@ -115,7 +98,6 @@ def add_team_player(team_pid, p_id):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(public_id = team_pid, user_id = user_id).first()
     user = User.query.filter_by(id = user_id).first()
-
     if team:
         player = Player.query.filter_by(id = p_id).first()
         if player:
@@ -135,7 +117,6 @@ def add_team_player(team_pid, p_id):
 def delete_team_player(team_pid, p_id):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(public_id = team_pid, user_id = user_id).first()
-
     if team:
         user = User.query.filter_by(id = user_id).first()
         player = Player.query.filter_by(id = p_id).first()
@@ -156,7 +137,6 @@ def delete_team_player(team_pid, p_id):
 def user_package():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
-    
     if user.last_opening + timedelta(days = 1) < datetime.now():
         user.last_opening = datetime.now()
         players_schema = []

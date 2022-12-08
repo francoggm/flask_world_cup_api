@@ -10,6 +10,8 @@ import getpass
 from uuid import uuid4
 
 load_dotenv()
+migrations_path = os.path.dirname(os.path.realpath(__file__))
+
 app = Flask(__name__)
 app.config.from_mapping(
     TESTING = True,
@@ -23,23 +25,22 @@ app.config.from_mapping(
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, directory = migrations_path + "/migrations")
 JWTManager(app)
 
-from .models import User, Team, Player
+from .models import User, Team, Player, user_player, player_team
 with app.app_context():
     db.create_all()
 
-from .auth import auth
+from .routes.auth import auth
 app.register_blueprint(auth)
 
-from .routes import routes
+from .routes.main import routes
 app.register_blueprint(routes)
 
-from .cards import cards
+from .routes.players import cards
 app.register_blueprint(cards)
 
-from .users import *
 
 @app.errorhandler(400)
 def generic_error(error):

@@ -3,10 +3,10 @@ from uuid import uuid4
 from flask_pydantic import validate
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 
-from . import db
-from .models import User
-from .schemas import login_schema, user_schema
-from .responses import PostAuth
+from .. import db
+from ..models import User
+from ..schemas import login_schema, user_schema
+from ..responses import PostAuth
 
 auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 
