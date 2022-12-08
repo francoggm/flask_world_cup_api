@@ -59,7 +59,7 @@ def create_superuser():
             print('Please enter a valid username')
             continue
         if User.query.filter_by(username = username).first():
-            username = None
+            username = ''
             print('Username already exists, please select another username!')
 
     password = getpass.getpass(prompt="Select a password: ")
