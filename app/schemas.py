@@ -2,7 +2,6 @@ from . import ma
 from .models import User, Team, Player
 
 # Models Schemas
-
 class PlayerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Player

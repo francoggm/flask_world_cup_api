@@ -1,6 +1,8 @@
 from flask import jsonify, abort, Blueprint
 from flask_pydantic import validate
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flasgger import swag_from
+
 from datetime import timedelta, datetime
 from uuid import uuid4
 
@@ -15,6 +17,7 @@ routes = Blueprint("routes", __name__, url_prefix = "/api/v1/user")
 #Teams
 @routes.get('/team')
 @jwt_required()
+@swag_from('../docs/team_get.yml')
 def get_teams():
     user_id = get_jwt_identity()
     teams = Team.query.filter_by(user_id = user_id).all()

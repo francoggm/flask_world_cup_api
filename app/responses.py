@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, Literal
 
-# Response Schemas
+# Responses Schemas
 class PostAuth(BaseModel):
     username: str
     password: str

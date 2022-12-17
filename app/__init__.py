@@ -3,28 +3,39 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+from flasgger import Swagger
+
 from dotenv import load_dotenv
+from uuid import uuid4
 
 import os
 import getpass
-from uuid import uuid4
+
+migrations_path = os.path.dirname(os.path.realpath(__file__))
 
 load_dotenv()
-migrations_path = os.path.dirname(os.path.realpath(__file__))
+
+SECRET_KEY = os.environ.get('SECRET_KEY')
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
+
+DB_USER = os.environ.get('DATABASE_USER')
+DB_PASSWORD = os.environ.get('DATABASE_PASSWORD')
+DB_CON = os.environ.get('DATABASE_CON')
+DB = os.environ.get('DATABASE')
 
 app = Flask(__name__)
 app.config.from_mapping(
     TESTING = True,
     CSRF_ENABLED = True,
-    SECRET_KEY = os.environ.get('SECRET_KEY'),
-    SQLALCHEMY_DATABASE_URI = \
-    f"postgresql://{os.environ.get('DATABASE_USER')}:{os.environ.get('DATABASE_PASSWORD')}@{os.environ.get('DATABASE_CON')}/{os.environ.get('DATABASE')}",
+    SECRET_KEY = SECRET_KEY,
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_CON}/{DB}",
     SQLALCHEMY_TRACK_MODIFICATIONS = True,
-    JWT_SECRET_KEY=os.environ.get('JWT_SECRET_KEY')
+    JWT_SECRET_KEY = JWT_SECRET_KEY
 )
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+swagger = Swagger(app)
 migrate = Migrate(app, db, directory = migrations_path + "/migrations")
 JWTManager(app)
 
@@ -40,7 +51,6 @@ app.register_blueprint(routes)
 
 from .routes.players import cards
 app.register_blueprint(cards)
-
 
 @app.errorhandler(400)
 def generic_error(error):
