@@ -17,7 +17,7 @@ routes = Blueprint("routes", __name__, url_prefix = "/api/v1/user")
 #Teams
 @routes.get('/team')
 @jwt_required()
-@swag_from('../docs/team_get.yml')
+@swag_from('../docs/teams/get_teams.yml')
 def get_teams():
     user_id = get_jwt_identity()
     teams = Team.query.filter_by(user_id = user_id).all()

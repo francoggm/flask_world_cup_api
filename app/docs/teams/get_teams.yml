@@ -1,0 +1,25 @@
+definitions:
+  Teams:
+    type: array
+    items:
+      type: object
+      properties:
+        public_id: 
+          type: string
+          example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+        name:
+          type: string
+          example: 'Brazil'
+        players_owned:
+          type: array
+          items:
+            type: object
+              properties:
+        
+responses:
+  200:
+    description: A list of teams that the user created
+    schema:
+      $ref: '#/definitions/Teams'
+    examples:
+      rgb: ['red', 'green', 'blue']
