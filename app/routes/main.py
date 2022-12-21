@@ -26,6 +26,7 @@ def get_teams():
 
 @routes.get('/team/<string:public_id>')
 @jwt_required()
+@swag_from('../docs/teams/get_team.yml')
 def get_team(public_id):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(user_id = user_id, public_id = public_id).first()
@@ -37,6 +38,7 @@ def get_team(public_id):
 @routes.post('/team')
 @validate()
 @jwt_required()
+@swag_from('../docs/teams/create_team.yml')
 def create_team(body: PostTeam):
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
@@ -50,6 +52,7 @@ def create_team(body: PostTeam):
 @routes.put('/team/<string:public_id>')
 @validate()
 @jwt_required()
+@swag_from('../docs/teams/update_team.yml')
 def update_team(public_id, body: PostTeam):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(user_id = user_id, public_id = public_id).first()
@@ -63,6 +66,7 @@ def update_team(public_id, body: PostTeam):
 
 @routes.delete('/team/<string:public_id>')
 @jwt_required()
+@swag_from('../docs/teams/delete_team.yml')
 def delete_team(public_id):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(public_id = public_id, user_id = user_id).first()

@@ -1,24 +1,34 @@
+summary: Creates a new team
+tags:
+  - Team
+consumes:
+  - application/json
+
 parameters:
-  - name: palette
-    in: path
-    type: string
-    enum: ['all', 'rgb', 'cmyk']
+  - in: body
+    name: name
+    schema:
+      type: string
+      example: 'Brazil'
     required: true
-    default: all
+    description: The team name
+
 definitions:
-  Palette:
+  Team:
     type: object
     properties:
-      palette_name:
+      public_id: 
+        type: string
+        example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+      name:
+        type: string
+        example: 'Brazil'
+      players_owned:
         type: array
-        items:
-          $ref: '#/definitions/Color'
-  Color:
-    type: string
+        example: []
+              
 responses:
   200:
-    description: A list of colors (may be filtered by palette)
+    description: A list of teams with players that the user created
     schema:
-      $ref: '#/definitions/Palette'
-    examples:
-      rgb: ['red', 'green', 'blue']
+      $ref: '#/definitions/Team'

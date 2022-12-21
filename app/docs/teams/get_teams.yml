@@ -1,3 +1,9 @@
+summary: Return a list of teams that the user created
+tags:
+  - Team
+consumes:
+  - application/json
+
 definitions:
   Teams:
     type: array
@@ -14,12 +20,30 @@ definitions:
           type: array
           items:
             type: object
-              properties:
-        
+            properties:
+              id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: 'Neymar'
+              age:
+                type: integer
+                example: 30
+              weight:
+                type: number
+                format: float
+                example: 75.25
+              height:
+                type: integer
+                format: int64
+                example: 180
+              role:
+                type: string
+                example: 'Player'
+              
 responses:
   200:
     description: A list of teams that the user created
     schema:
       $ref: '#/definitions/Teams'
-    examples:
-      rgb: ['red', 'green', 'blue']

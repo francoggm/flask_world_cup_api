@@ -1,0 +1,36 @@
+summary: Delete a team with this public id
+tags:
+  - Team
+consumes:
+  - application/json
+
+parameters:
+  - in: path
+    name: public_id
+    schema:
+      type: string
+      example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+    required: true
+    description: Public ID generated to a specific team
+
+definitions:
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+        example: 'Team not found!'
+              
+responses:
+  200:
+    description: Message if successfuly delete team
+    schema:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: 'Team deleted!'
+  404:
+    description: Team not found in this account
+    schema:
+      $ref: '#/definitions/Error'

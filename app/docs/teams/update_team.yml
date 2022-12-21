@@ -1,0 +1,75 @@
+summary: Updates the team with this public ic
+tags:
+  - Team
+consumes:
+  - application/json
+
+parameters:
+  - in: path
+    name: public_id
+    schema:
+      type: string
+      example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+    required: true
+    description: Public ID generated to a specific team
+    
+  - in: body
+    name: name
+    schema:
+      type: string
+      example: 'Brazil'
+    required: true
+    description: The team name you want to update
+
+definitions:
+  Team:
+    type: object
+    properties:
+      public_id: 
+        type: string
+        example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+      name:
+        type: string
+        example: 'Brazil'
+      players_owned:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: 'Neymar'
+            age:
+              type: integer
+              example: 30
+            weight:
+              type: number
+              format: float
+              example: 75.25
+            height:
+              type: integer
+              format: int64
+              example: 180
+            role:
+              type: string
+              example: 'Player'
+              
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+        example: 'Team not found!'
+              
+responses:
+  200:
+    description: Message if successfuly update team
+    schema:
+      $ref: '#/definitions/Team'
+  404:
+    description: Team not found in this account
+    schema:
+      $ref: '#/definitions/Error'
