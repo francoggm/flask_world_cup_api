@@ -1,0 +1,41 @@
+summary: Return the cards from the user deck
+tags:
+  - Card
+consumes:
+  - application/json
+
+definitions:
+  Cards:
+    type: object
+    properties:
+      cards:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: 'Neymar'
+            age:
+              type: integer
+              example: 30
+            weight:
+              type: number
+              format: float
+              example: 75.25
+            height:
+              type: integer
+              format: int64
+              example: 180
+            role:
+              type: string
+              example: 'Player'          
+              
+responses:
+  200:
+    description: A list of players cards
+    schema:
+      $ref: '#/definitions/Cards'

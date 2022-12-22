@@ -1,0 +1,48 @@
+summary: Delete a plaer card from the users deck
+tags:
+  - Card
+consumes:
+  - application/json
+
+parameters:
+  - in: path
+    name: id
+    schema:
+      type: integer
+      example: 1
+    required: true
+    description: ID of the player card
+
+definitions:
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+        example: 'Card not found!'
+              
+responses:
+  200:
+    description: Message if successfuly delete the card
+    schema:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: 'Player deleted from your cards!'
+  400:
+    description: Card not found in this account deck
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Player not found in yours cards!'
+  404:
+    description: Player not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Player not found!'

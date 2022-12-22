@@ -1,0 +1,60 @@
+summary: Login a user
+tags:
+  - Auth
+consumes:
+  - application/json
+ 
+parameters:
+  - in: body
+    name: username
+    schema:
+      type: string
+      example: 'gmfranco'
+    required: true
+    description: A username to the account
+  - in: body
+    name: password
+    schema:
+      type: string
+      example: '12345'
+    required: true
+    description: A password to the account
+
+definitions:
+  User:
+    type: object
+    properties:
+      public_id: 
+        type: string
+        example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+      username:
+        type: string
+        example: 'gmfranco'          
+      access_token:
+        type: string
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'          
+      refresh_token:
+        type: string
+        example: 'eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3MTY3MTE2MywianRpIj'          
+              
+responses:
+  200:
+    description: The public id of the new user
+    schema:
+      $ref: '#/definitions/User'
+  404:
+    description: Invalid username
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'User not found!'
+  400:
+    description: Wrong credentials to access
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Wrong credentials!'

@@ -77,16 +77,18 @@ def delete_team(public_id):
 
     abort(404, description='Team not found!')
 
-@routes.get('/player')
+@routes.get('/card')
 @jwt_required()
-def get_players():
+@swag_from('../docs/cards/get_cards.yml')
+def get_cards():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
     return {"cards": players_schema.dump(user.players_owned)}, 200
 
-@routes.delete('/player/<int:id>')
+@routes.delete('/card/<int:id>')
 @jwt_required()
-def delete_players(id):
+@swag_from('../docs/cards/delete_card.yml')
+def delete_card(id):
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
     player = Player.query.filter_by(id = id).first()
@@ -96,12 +98,13 @@ def delete_players(id):
             db.session.commit()
             return jsonify({"msg": "Player deleted from your cards!"}), 200
 
-        abort(404, description='Player not found in yours cards!')
-    abort(404, description='Player not found!')
+        abort(400, description = 'Player not found in yours cards!')
+    abort(404, description = 'Player not found!')
 
-@routes.put('/team/<string:team_pid>/player/<int:p_id>')
+@routes.put('/team/<string:team_pid>/card/<int:p_id>')
 @jwt_required()
-def add_team_player(team_pid, p_id):
+@swag_from('../docs/cards/add_team_card.yml')
+def add_team_card(team_pid, p_id):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(public_id = team_pid, user_id = user_id).first()
     user = User.query.filter_by(id = user_id).first()
@@ -119,9 +122,10 @@ def add_team_player(team_pid, p_id):
         abort(404, description='Player not found!')
     abort(404, description='Team not found!')
 
-@routes.delete('/team/<string:team_pid>/player/<int:p_id>')
+@routes.delete('/team/<string:team_pid>/card/<int:p_id>')
 @jwt_required()
-def delete_team_player(team_pid, p_id):
+@swag_from('../docs/cards/delete_team_card.yml')
+def delete_team_card(team_pid, p_id):
     user_id = get_jwt_identity()
     team = Team.query.filter_by(public_id = team_pid, user_id = user_id).first()
     if team:
@@ -141,6 +145,7 @@ def delete_team_player(team_pid, p_id):
 
 @routes.get('/package')
 @jwt_required()
+@swag_from('../docs/cards/package.yml')
 def user_package():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id = user_id).first()
@@ -159,6 +164,10 @@ def user_package():
     remains = (user.last_opening + timedelta(days = 1)) - datetime.now()
     remains = timedelta(seconds = remains.seconds)
     return jsonify({"error": f"Still have {str(remains)} hours to open a new package!"}), 408
+
+@routes.get('/teste')
+def teste():
+    return '<h1>daniel gay</h1>'
     
 
     

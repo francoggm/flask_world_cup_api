@@ -1,0 +1,79 @@
+summary: Add a player card to a team
+tags:
+  - Card
+consumes:
+  - application/json
+
+parameters:
+  - in: path
+    name: public_id
+    schema:
+      type: string
+      example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+    required: true
+    description: Public ID generated to a specific team
+  - in: path
+    name: id
+    schema:
+      type: integer
+      example: 1
+    required: true
+    description: ID of the player card
+
+definitions:
+  Team:
+    type: object
+    properties:
+      public_id: 
+        type: string
+        example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+      name:
+        type: string
+        example: 'Brazil'
+      players_owned:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: 'Neymar'
+            age:
+              type: integer
+              example: 30
+            weight:
+              type: number
+              format: float
+              example: 75.25
+            height:
+              type: integer
+              format: int64
+              example: 180
+            role:
+              type: string
+              example: 'Player'          
+              
+responses:
+  200:
+    description: A list of players cards
+    schema:
+      $ref: '#/definitions/Team'
+  400:
+    description: Player card already have a team
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Player is already in one of your teams!'
+  404:
+    description: Player card not in user deck
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Player not found in your cards!'

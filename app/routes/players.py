@@ -7,7 +7,7 @@ from ..models import User, Player
 from ..responses import PostPlayer, UpdatePlayer
 from ..schemas import player_schema
 
-cards = Blueprint("cards", __name__, url_prefix = "/api/v1/card")
+cards = Blueprint("cards", __name__, url_prefix = "/api/v1")
 
 #Players
 @cards.get('/player')

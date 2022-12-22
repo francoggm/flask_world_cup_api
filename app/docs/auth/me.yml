@@ -1,0 +1,82 @@
+summary: Informations from the user
+tags:
+  - Auth
+consumes:
+  - application/json
+ 
+definitions:
+  User:
+    type: object
+    properties:
+      public_id: 
+        type: string
+        example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+      username:
+        type: string
+        example: 'gmfranco'          
+      teams:
+        type: array
+        items:
+          type: object
+          properties:
+            public_id: 
+              type: string
+              example: '51de88fa-c14f-4ce3-9f09-b7b48293a315'
+            name:
+              type: string
+              example: 'Brazil'
+            players_owned:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: 'Neymar'
+                  age:
+                    type: integer
+                    example: 30
+                  weight:
+                    type: number
+                    format: float
+                    example: 75.25
+                  height:
+                    type: integer
+                    format: int64
+                    example: 180
+                  role:
+                    type: string
+                    example: 'Player'         
+      players_owned:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: 'Neymar'
+            age:
+              type: integer
+              example: 30
+            weight:
+              type: number
+              format: float
+              example: 75.25
+            height:
+              type: integer
+              format: int64
+              example: 180
+            role:
+              type: string
+              example: 'Player'     
+responses:
+  200:
+    description: The public id of the new user
+    schema:
+      $ref: '#/definitions/User'

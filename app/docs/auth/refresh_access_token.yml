@@ -1,0 +1,19 @@
+summary: Generating a new access token
+tags:
+  - Auth
+consumes:
+  - application/json
+ 
+definitions:
+  User:
+    type: object
+    properties:
+      access_token:
+        type: string
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'        
+   
+responses:
+  200:
+    description: New access token
+    schema:
+      $ref: '#/definitions/User'
