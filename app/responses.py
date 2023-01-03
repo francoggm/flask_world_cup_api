@@ -14,11 +14,11 @@ class PostPlayer(BaseModel):
     birthdate: str
     weight: float
     height: int
-    role: Literal['coach', 'player']
+    role: str
 
 class UpdatePlayer(BaseModel):
     name: Optional[str]
     birthdate: Optional[str]
     weight: Optional[float]
     height: Optional[int]
-    role: Optional[Literal['coach', 'player']]
+    role: Optional[str]

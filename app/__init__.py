@@ -20,7 +20,7 @@ JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 
 DB_USER = os.environ.get('DATABASE_USER')
 DB_PASSWORD = os.environ.get('DATABASE_PASSWORD')
-DB_CON = os.environ.get('DATABASE_CON')
+DB_HOST = os.environ.get('DATABASE_HOST')
 DB = os.environ.get('DATABASE')
 
 app = Flask(__name__)
@@ -28,7 +28,7 @@ app.config.from_mapping(
     TESTING = True,
     CSRF_ENABLED = True,
     SECRET_KEY = SECRET_KEY,
-    SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_CON}/{DB}",
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB}",
     SQLALCHEMY_TRACK_MODIFICATIONS = True,
     JWT_SECRET_KEY = JWT_SECRET_KEY
 )

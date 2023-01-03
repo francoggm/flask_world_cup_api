@@ -46,11 +46,16 @@ class User(db.Model):
 
 class Player(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(length=30), nullable=False)
+    name = db.Column(db.String(length=60), nullable=False)
     birthdate = db.Column(db.Date())
     weight = db.Column(db.Numeric(precision=5, scale=2), nullable=False)
     height = db.Column(db.Integer(), nullable=False)
-    role = db.Column(db.String(length=15), nullable=False)
+    position = db.Column(db.String(length=15), nullable=False)
+    games_played = db.Column(db.Integer())
+    minutes_played = db.Column(db.Integer())
+    cards_yellow = db.Column(db.Integer())
+    cards_red = db.Column(db.Integer())
+    goals = db.Column(db.Integer())
 
     @property
     def age(self):
