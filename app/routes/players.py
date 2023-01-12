@@ -1,6 +1,7 @@
 from flask import jsonify, abort, Blueprint
 from flask_pydantic import validate
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flasgger import swag_from
 
 from .. import db
 from ..models import User, Player
@@ -9,9 +10,10 @@ from ..schemas import player_schema
 
 cards = Blueprint("cards", __name__, url_prefix = "/api/v1")
 
-#Players
+#Players 
 @cards.get('/player')
 @jwt_required()
+@swag_from('../docs/players/all_players.yml')
 def get_players():
     user_id = get_jwt_identity()
     players = Player.query.all()
@@ -25,6 +27,7 @@ def get_players():
 
 @cards.get('/player/<int:id>')
 @jwt_required()
+@swag_from('../docs/players/player.yml')
 def get_player(id):
     user_id = get_jwt_identity()
     player = Player.query.filter_by(id = id).first()
@@ -46,7 +49,9 @@ def create_player(body: PostPlayer):
         return {'error': "You don't have permission!"}, 403
 
     body = body.dict()
-    player = Player(name = body['name'], birthdate = body['birthdate'], weight = body['weight'], height = body['height'], role = body["role"])
+    player = Player(
+        name = body['name'], birthdate = body['birthdate'], weight = body['weight'], height = body['height'], position = body["position"], games_played = body["games_played"], minutes_played = body["minutes_played"], cards_yellow = body["cards_yellow"], cards_red = body["cards_red"], goals = body["goals"]
+    )
     db.session.add(player)
     db.session.commit()
     return player_schema.dump(player), 201

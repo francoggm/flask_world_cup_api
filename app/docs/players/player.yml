@@ -1,0 +1,69 @@
+summary: Return the player with this ID
+tags:
+  - Player
+consumes:
+  - application/json
+parameters:
+  - in: header
+    name: Bearer Token
+    schema:
+      type: string
+      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3MDM0MzUzNiwianRpIjoiN2I1YjMxNmYtNTdhN
+    required: true
+    description: Access token generated on login
+  - in: path
+    name: id
+    schema:
+      type: integer
+      example: 1
+    required: true
+    description: ID of the player
+  
+
+definitions:
+  Player:
+    type: object
+    properties:
+      player:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: 'Neymar'
+          age:
+            type: integer
+            example: 30
+          weight:
+            type: number
+            format: float
+            example: 75.25
+          height:
+            type: integer
+            format: int64
+            example: 180
+          role:
+            type: string
+            example: 'Player'   
+          own:
+            type: boolean
+            example: True
+
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+        example: 'Player not found!'
+              
+responses:
+  200:
+    description: The player with this ID
+    schema:
+      $ref: '#/definitions/Player'
+  404:
+    description: Player not found with this ID
+    schema:
+      $ref: '#/definitions/Error'

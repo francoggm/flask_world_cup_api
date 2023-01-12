@@ -1,10 +1,16 @@
-summary: Delete a plaer card from the users deck
+summary: Delete a player card from the users deck
 tags:
   - Card
 consumes:
   - application/json
-
 parameters:
+  - in: header
+    name: Bearer Token
+    schema:
+      type: string
+      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3MDM0MzUzNiwianRpIjoiN2I1YjMxNmYtNTdhN
+    required: true
+    description: Access token generated on login
   - in: path
     name: id
     schema:

@@ -3,6 +3,14 @@ tags:
   - Auth
 consumes:
   - application/json
+parameters:
+  - in: header
+    name: Bearer Token
+    schema:
+      type: string
+      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3MDM0MzUzNiwianRpIjoiN2I1YjMxNmYtNTdhN
+    required: true
+    description: Access token generated on login
  
 definitions:
   User:

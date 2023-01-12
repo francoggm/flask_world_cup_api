@@ -5,7 +5,7 @@ from .models import User, Team, Player
 class PlayerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Player
-        fields = ('name', 'age', 'weight', 'height', 'role', 'team_id', 'id')
+        fields = ('name', 'age', 'weight', 'height', 'position', 'games_played', 'minutes_played', 'cards_yellow', 'cards_red', 'goals', 'team_id', 'id')
 
 class TeamSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
