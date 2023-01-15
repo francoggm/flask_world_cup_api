@@ -28,7 +28,7 @@ app.config.from_mapping(
     TESTING = True,
     CSRF_ENABLED = True,
     SECRET_KEY = SECRET_KEY,
-    SQLALCHEMY_DATABASE_URI = f"postgresql://gabriel:12345@localhost/worldcup",
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB}",
     SQLALCHEMY_TRACK_MODIFICATIONS = True,
     JWT_SECRET_KEY = JWT_SECRET_KEY
 )
