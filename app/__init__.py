@@ -15,20 +15,20 @@ migrations_path = os.path.dirname(os.path.realpath(__file__))
 
 load_dotenv()
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
-JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
+JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
-DB_USER = os.environ.get('DATABASE_USER')
-DB_PASSWORD = os.environ.get('DATABASE_PASSWORD')
-DB_HOST = os.environ.get('DATABASE_HOST')
-DB = os.environ.get('DATABASE')
+DB_USER = os.getenv('DATABASE_USER')
+DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
+DB_HOST = os.getenv('DATABASE_HOST')
+DB = os.getenv('DATABASE')
 
 app = Flask(__name__)
 app.config.from_mapping(
     TESTING = True,
     CSRF_ENABLED = True,
     SECRET_KEY = SECRET_KEY,
-    SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB}",
+    SQLALCHEMY_DATABASE_URI = f"postgresql://gabriel:12345@localhost/worldcup",
     SQLALCHEMY_TRACK_MODIFICATIONS = True,
     JWT_SECRET_KEY = JWT_SECRET_KEY
 )
